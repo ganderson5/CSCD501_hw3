@@ -14,14 +14,15 @@ public class PatternMatching {
         String pattern = readFile(ptnFile);
         char[] alphabet = constructAlphabet(pattern);
         State[] states = constructStates(alphabet, pattern.length());
-        printAutomata(states);
-        System.out.println();
         states = constructAutomata(pattern, states);
-        printAutomata(states);
+        automataMatching(text, states, pattern.length()-1);
+
+       // printAutomata(states);
 //        System.out.println(alphabet);
 //        System.out.println(text);
 //        System.out.println(pattern);
     }
+
 
     public static String readFile(String fileName) throws FileNotFoundException {
         File file = new File(fileName);
@@ -75,10 +76,21 @@ public class PatternMatching {
         return states;
     }
 
+    private static void automataMatching(String text, State[] states, int m) {
+        int n = text.length();
+        int q = 0;
+        for(int i = 1; i < n; i++) {
+            q = State.getNextState(states[q], text.charAt(i));
+            if( q == m) {
+                System.out.println("Pattern is matched at text location: " + (i-m));
+            }
+        }
+    }
+
     public static void printAutomata(State[] states) {
-        for(int i = 0; i < states.length; i++) {
-            for(int j = 0; j < states[i].alphabet.length; j++) {
-                System.out.println("State: " + states[i].ID + " Letter In State: " +states[i].alphabet[j].symbol +" Letters next state: "+ states[i].alphabet[j].nextState);
+        for (State state : states) {
+            for (int j = 0; j < state.alphabet.length; j++) {
+                System.out.println("State: " + state.ID + " Letter In State: " + state.alphabet[j].symbol + " Letters next state: " + state.alphabet[j].nextState);
             }
         }
     }
@@ -105,6 +117,16 @@ class State {
         for(int i = 0; i < input.length; i++) {
             alphabet[i] = new charNode(input[i], 0);
         }
+    }
+
+    public static int getNextState(State state, char symbol) {
+        for(int i = 0; i < state.alphabet.length; i++) {
+            if(symbol == state.alphabet[i].symbol) {
+                return state.alphabet[i].nextState;
+                // return nextState value here
+            }
+        }
+        return 0;
     }
 
 }
