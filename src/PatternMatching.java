@@ -45,11 +45,11 @@ public class PatternMatching {
     }
 
     public static State[] constructStates(char[] alphabet, int numOfStates) {
-        State[] States = new State[numOfStates];
+        State[] states = new State[numOfStates];
         for(int i = 0; i < numOfStates; i++) {
-            States[i] = new State(i, alphabet);
+            states[i] = new State(i, alphabet);
         }
-        return States;
+        return states;
     }
 
     public static State[] constructAutomata(String pattern, State[] states) {
@@ -95,8 +95,8 @@ class State {
         }
     }
 
-    static int ID; // What number the state is (0, 1, 2, 3)
-    static charNode[] alphabet;  // The characters in the alphabet as well as what the number of the next state
+    int ID; // What number the state is (0, 1, 2, 3)
+    charNode[] alphabet;  // The characters in the alphabet as well as what the number of the next state
     // that character will take you to.
 
     public State(int ID, char[] input) {
