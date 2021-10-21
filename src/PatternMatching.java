@@ -13,11 +13,11 @@ public class PatternMatching {
         String text = readFile(txtFile);
         String pattern = readFile(ptnFile);
         char[] alphabet = constructAlphabet(pattern);
-        State[] states = constructStates(alphabet, pattern.length());
-        states = constructAutomata(pattern, states);
-        automataMatching(text, states, pattern.length()-1);
+        State[] states = constructStates(alphabet, pattern.length()+1);
+        constructAutomata(pattern, states);
+        //automataMatching(text, states, pattern.length());
 
-       // printAutomata(states);
+        printAutomata(states);
 //        System.out.println(alphabet);
 //        System.out.println(text);
 //        System.out.println(pattern);
@@ -44,36 +44,43 @@ public class PatternMatching {
         }
         return res.toCharArray();
     }
-
+    //TODO Need to create an additional end state.
     public static State[] constructStates(char[] alphabet, int numOfStates) {
         State[] states = new State[numOfStates];
-        for(int i = 0; i < numOfStates; i++) {
+        int i;
+        for(i = 0; i < numOfStates; i++) {
             states[i] = new State(i, alphabet);
+        }
+        for(int j = 0; j < states[i-1].alphabet.length; j++) {
+            states[i-1].alphabet[j].nextState = 0;
         }
         return states;
     }
-
+    // Not taking the final letter in the pattern to the accepting state.
+    // Need to make it so that state 0 is before any letters are even evaluated...if pattern starts with
+    // m then state 0 should have 1 for m not 0.
     public static State[] constructAutomata(String pattern, State[] states) {
         int m = pattern.length();
         int k;
+        pattern = " " + pattern;
         String suffix = "";
         String prefix;
-        for(int q = 0; q < m-1; q++) {
+        for(int q = 0; q < m+1; q++) {
             for (int j = 0; j < states[q].alphabet.length; j++) {
                 k = min(m+1, q + 2);
                 //prefix = pattern.substring(0,k);
                 //suffix = pattern.substring(0,k-1) + states[q].alphabet[j];
                 do{
-                    prefix = pattern.substring(0,k);
-                    suffix = pattern.substring(0,k-1) + states[q].alphabet[j].symbol; // Need to have an edge case when we are analyzing just the first letter.
+                    prefix = pattern.substring(0, k);
+                    suffix = pattern.substring(0, k - 1) + states[q].alphabet[j].symbol; // Suffix needs to start at something other than 0
 
                     k = k - 1;
-                                   }
-                while(!(prefix.equals(suffix))); // needs to compare the pattern from 0 to k length to the current letter combination
+               }
+                while(!(prefix.equals(suffix)) && k > 0); // needs to compare the pattern from 0 to k length to the current letter combination
                 states[q].alphabet[j].nextState = k;
             }
         }
-        return states;
+         return states;
     }
 
     private static void automataMatching(String text, State[] states, int m) {
@@ -92,6 +99,7 @@ public class PatternMatching {
             for (int j = 0; j < state.alphabet.length; j++) {
                 System.out.println("State: " + state.ID + " Letter In State: " + state.alphabet[j].symbol + " Letters next state: " + state.alphabet[j].nextState);
             }
+            System.out.println();
         }
     }
 }
