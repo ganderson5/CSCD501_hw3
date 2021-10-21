@@ -12,12 +12,16 @@ public class PatternMatching {
 
         String text = readFile(txtFile);
         String pattern = readFile(ptnFile);
+        if(text.equals(pattern)) {
+            System.out.println("Pattern is matched at text location: 0");
+
+        }
         char[] alphabet = constructAlphabet(pattern);
         State[] states = constructStates(alphabet, pattern.length()+1);
         constructAutomata(pattern, states);
-        //automataMatching(text, states, pattern.length());
+        automataMatching(text, states, pattern.length());
 
-        printAutomata(states);
+        //printAutomata(states);
 //        System.out.println(alphabet);
 //        System.out.println(text);
 //        System.out.println(pattern);
@@ -68,13 +72,19 @@ public class PatternMatching {
         for(int q = 0; q < m+1; q++) {
             for (int j = 0; j < states[q].alphabet.length; j++) {
                 k = min(m+1, q + 2);
-                //prefix = pattern.substring(0,k);
-                //suffix = pattern.substring(0,k-1) + states[q].alphabet[j];
                 do{
-                    prefix = pattern.substring(0, k);
-                    suffix = pattern.substring(0, k - 1) + states[q].alphabet[j].symbol; // Suffix needs to start at something other than 0
+                    if(q == m) {
+                        suffix = pattern.substring(0,1) + pattern.substring(2) ;
+                        prefix = pattern.substring(0, k);
+                        suffix = suffix.substring(0, k-1) + states[q].alphabet[j].symbol;
+                        k = k - 1;
 
-                    k = k - 1;
+                    }
+                    else {
+                        prefix = pattern.substring(0, k);
+                        suffix = pattern.substring(0, k - 1) + states[q].alphabet[j].symbol; // Suffix needs to start at something other than 0
+                        k = k - 1;
+                    }
                }
                 while(!(prefix.equals(suffix)) && k > 0); // needs to compare the pattern from 0 to k length to the current letter combination
                 states[q].alphabet[j].nextState = k;
@@ -87,7 +97,7 @@ public class PatternMatching {
         int n = text.length();
         int q = 0;
         for(int i = 1; i < n; i++) {
-            q = State.getNextState(states[q], text.charAt(i));
+            q = State.getNextState(states[q], text.charAt(i-1));
             if( q == m) {
                 System.out.println("Pattern is matched at text location: " + (i-m));
             }
