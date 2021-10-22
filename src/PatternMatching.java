@@ -13,18 +13,13 @@ public class PatternMatching {
         String text = readFile(txtFile);
         String pattern = readFile(ptnFile);
         if(text.equals(pattern)) {
-            System.out.println("Pattern is matched at text location: 0");
-
+            System.out.println("Pattern and text are the same!");
         }
         char[] alphabet = constructAlphabet(pattern);
         State[] states = constructStates(alphabet, pattern.length()+1);
         constructAutomata(pattern, states);
-        automataMatching(text, states, pattern.length());
-
-//        printAutomata(states);
-//        System.out.println(alphabet);
-//        System.out.println(text);
-//        System.out.println(pattern);
+        //automataMatching(text, states, pattern.length());
+        printAutomata(states);
     }
 
 
@@ -73,7 +68,11 @@ public class PatternMatching {
             for (int j = 0; j < states[q].alphabet.length; j++) {
                 k = min(m+1, q + 2);
                 do{
-                    if(q == m && (k >= (min(m+1,q+2)-states[0].alphabet.length))) { // might need to add an additional condition here states[0].alphabet.length.....q == m && (k >= (min(m+1,q+2)-states[0].alphabet.length))
+
+                    prefix = pattern.substring(0, k);
+                    suffix = pattern.substring(0, k-1) + states[q].alphabet[j].symbol;
+                    // This works for the h in hehe but not the e...
+                    if(q == m && suffix.length() == pattern.length()) { // might need to add an additional condition here states[0].alphabet.length.....q == m && (k >= (min(m+1,q+2)-states[0].alphabet.length))
                         suffix = pattern.substring(0,1) + pattern.substring(2) ;
                         prefix = pattern.substring(0, k);
                         suffix = suffix.substring(0, k-1) + states[q].alphabet[j].symbol;
@@ -82,7 +81,7 @@ public class PatternMatching {
                     }
                     else {
                         prefix = pattern.substring(0, k);
-                        suffix = pattern.substring(0, k-1) + states[q].alphabet[j].symbol; // Suffix needs to start at something other than 0
+                        suffix = pattern.substring(0, k-1) + states[q].alphabet[j].symbol;
                         k = k - 1;
                     }
                }
@@ -145,6 +144,10 @@ class State {
             }
         }
         return 0;
+    }
+
+    static void karpRabin(String ptn, String txt, int primeNum) {
+
     }
 
 }
