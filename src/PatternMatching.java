@@ -21,7 +21,7 @@ public class PatternMatching {
         constructAutomata(pattern, states);
         automataMatching(text, states, pattern.length());
 
-        //printAutomata(states);
+//        printAutomata(states);
 //        System.out.println(alphabet);
 //        System.out.println(text);
 //        System.out.println(pattern);
@@ -73,7 +73,7 @@ public class PatternMatching {
             for (int j = 0; j < states[q].alphabet.length; j++) {
                 k = min(m+1, q + 2);
                 do{
-                    if(q == m) {
+                    if(q == m && (k >= (min(m+1,q+2)-states[0].alphabet.length))) { // might need to add an additional condition here states[0].alphabet.length.....q == m && (k >= (min(m+1,q+2)-states[0].alphabet.length))
                         suffix = pattern.substring(0,1) + pattern.substring(2) ;
                         prefix = pattern.substring(0, k);
                         suffix = suffix.substring(0, k-1) + states[q].alphabet[j].symbol;
@@ -82,7 +82,7 @@ public class PatternMatching {
                     }
                     else {
                         prefix = pattern.substring(0, k);
-                        suffix = pattern.substring(0, k - 1) + states[q].alphabet[j].symbol; // Suffix needs to start at something other than 0
+                        suffix = pattern.substring(0, k-1) + states[q].alphabet[j].symbol; // Suffix needs to start at something other than 0
                         k = k - 1;
                     }
                }
@@ -96,7 +96,7 @@ public class PatternMatching {
     private static void automataMatching(String text, State[] states, int m) {
         int n = text.length();
         int q = 0;
-        for(int i = 1; i < n; i++) {
+        for(int i = 1; i < n+1; i++) {
             q = State.getNextState(states[q], text.charAt(i-1));
             if( q == m) {
                 System.out.println("Pattern is matched at text location: " + (i-m));
