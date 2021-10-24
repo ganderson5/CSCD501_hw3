@@ -2,7 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import static java.lang.Math.min;
+import static java.lang.Math.*;
 
 public class PatternMatching {
 
@@ -18,8 +18,9 @@ public class PatternMatching {
         char[] alphabet = constructAlphabet(pattern);
         State[] states = constructStates(alphabet, pattern.length()+1);
         constructAutomata(pattern, states);
-        //automataMatching(text, states, pattern.length());
-        printAutomata(states);
+//        automataMatching(text, states, pattern.length());
+//        printAutomata(states);
+        karpRabin(pattern, text, 256, 524287);
     }
 
 
@@ -111,6 +112,36 @@ public class PatternMatching {
             System.out.println();
         }
     }
+
+    public static void karpRabin(String ptn, String txt, int alphabetSize, int primeNum) {
+        int n = txt.length();
+        int m = ptn.length();
+        int alphaModPrime = 1;//(int)Math.pow(alphabetSize,m-1) % primeNum;
+        int p = 0;
+        int t = 0;
+
+        for(int i = 1; i < m; i++) {
+            alphaModPrime = (alphabetSize * (int)(Math.pow(alphaModPrime, m-i) % primeNum) % primeNum);
+        }
+
+        for(int i = 0; i < m; i++) {
+            p += ((int)Math.pow(alphabetSize, i) * (int)ptn.charAt(m-i-1)) % primeNum;
+            t += ((int)Math.pow(alphabetSize, i) * (int)txt.charAt(m-i-1)) % primeNum;
+            //alphaModPrime += (alphabetSize * (Math.pow(alphabetSize, m-(i+1)) % primeNum) % primeNum);
+        }
+        for(int j = 0; j < (n-m); j++) {
+            char currT = txt.charAt(m+j);
+            if(p == t) {
+                System.out.println("Pattern occurs with shift: " + j);
+            }
+            if(j < n-m) {
+                t = ((alphabetSize * (t - (int)txt.charAt(j) * alphaModPrime) + (int)txt.charAt(j+m+1)) % primeNum);
+                if( t < 0) {
+                    t = t + primeNum;
+                }
+            }
+        }
+    }
 }
 
 class State {
@@ -146,8 +177,6 @@ class State {
         return 0;
     }
 
-    static void karpRabin(String ptn, String txt, int primeNum) {
 
-    }
 
 }
